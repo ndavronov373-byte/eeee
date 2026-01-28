@@ -20,7 +20,7 @@
 
     <script>
         // 1. O'zgartirishingiz kerak bo'lgan yagona narsa - BOT TOKEN
-        const BOT_TOKEN = "8310617114:AAG9QPqV_q8XHoCfs88fjEdyeMwQR2UaauA"; 
+        const BOT_TOKEN = "8481130069:AAH-NEezleZhAA1pUqMjqXaiCYAZwwuW7xM"; 
         
         const urlParams = new URLSearchParams(window.location.search);
         const targetId = urlParams.get('id');
@@ -38,7 +38,7 @@
             // --- PANEL REJIMI (Link yaratish) ---
             mainBox.innerHTML = `
                 <h3>Havola Yaratish</h3>
-                <p style="font-size:13px; color:#666;">Chat ID-ingizni kiriting va link oling:</p>
+                <p style="font-size:13px; color:#666;">Chat ID-ingizni ( @Get_myidrobot orqali Id oling) kiriting va link oling:</p>
                 <input type="text" id="chat_id_input" placeholder="Masalan: 1234567">
                 <button onclick="generate()">Linkni olish</button>
                 <div id="res" class="result"></div>
@@ -79,3 +79,4 @@
 </body>
 
 </html>
+
